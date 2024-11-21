@@ -398,6 +398,46 @@ function App() {
     }
   };
 
+  // 파일 내보내기 함수 추가
+  const exportSchedule = () => {
+    const scheduleData = JSON.stringify(schedule, null, 2); // 보기 좋게 포맷팅
+    const blob = new Blob([scheduleData], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    
+    link.href = url;
+    link.download = `my-calendar-schedule-${new Date().toLocaleDateString()}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(link);
+  };
+
+  // 파일 불러오기 함수 추가
+  const importSchedule = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const importedSchedule = JSON.parse(e.target.result);
+          setSchedule(importedSchedule);
+          setAlert({
+            open: true,
+            message: '일정을 성공적으로 불러왔습니다.'
+          });
+        } catch (error) {
+          setAlert({
+            open: true,
+            message: '올바른 형식의 파일이 아닙니다.'
+          });
+        }
+      };
+      reader.readAsText(file);
+    }
+  };
+
   return (
     <div className="App">
       <div className="input-section">
@@ -493,7 +533,7 @@ function App() {
               color: '#fff',
               padding: '10px',
               borderRadius: '4px',
-              marginTop: '40vh'
+              marginTop: '350px'
             }}
           >
             모든 일정 제거
@@ -536,6 +576,43 @@ function App() {
               Pixabay
             </a>
           </div>
+        </div>
+
+        <div className="schedule-actions" style={{ 
+          display: 'flex', 
+          gap: '10px',
+          marginTop: '15px',
+          marginBottom: '15px' 
+        }}>
+          <Button
+            onClick={exportSchedule}
+            style={{
+              flex: 1,
+              backgroundColor: '#4a4a8f',
+              color: '#fff',
+              padding: '10px'
+            }}
+          >
+            일정 내보내기
+          </Button>
+          <input
+            type="file"
+            accept=".txt"
+            style={{ display: 'none' }}
+            id="schedule-file-input"
+            onChange={importSchedule}
+          />
+          <Button
+            onClick={() => document.getElementById('schedule-file-input').click()}
+            style={{
+              flex: 1,
+              backgroundColor: '#4a4a8f',
+              color: '#fff',
+              padding: '10px'
+            }}
+          >
+            일정 불러오기
+          </Button>
         </div>
 
       </div>

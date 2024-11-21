@@ -496,7 +496,9 @@ input {
 /* 이벤트 스타일 */
 .fc-event {
   border: none !important;
-  padding: 2px 6px !important;
+  padding: 2px 4px !important;
+  margin: 0 !important;
+  right: 0 !important;
 }
 
 .fc-event-title {
@@ -653,6 +655,9 @@ td.fc-timegrid-slot,
 /* 이벤트 컨테이너 조정 */
 .fc-timegrid-event-harness {
   height: auto !important;
+  margin: 0 !important;
+  right: 0 !important;
+  left: 0 !important;
 }
 
 /* 스크롤 영역 최소 높이 제거 */
@@ -828,4 +833,23 @@ td.fc-timegrid-slot,
 .fc-event {
   border: none !important;
   padding: 2px 4px !important;
+  margin: 0 !important;
+  right: 0 !important;
+}
+
+.fc-timegrid-event-harness {
+  margin: 0 !important;
+  right: 0 !important;
+  left: 0 !important;
+}
+
+.fc-timegrid-event {
+  margin: 0 !important;
+  right: 0 !important;
+}
+
+/* 이벤트 컨테이너 패딩 조정 */
+.fc-timegrid-col-events {
+  padding: 0 !important;
+  margin: 0 !important;
 }
