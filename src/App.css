@@ -1,38 +1,831 @@
 .App {
-  text-align: center;
+  display: flex;
+  gap: 20px;
+  background-color: #1a1a1a;
+  color: #ffffff;
+  height: 100vh;  /* 고정 높이 설정 */
+  box-sizing: border-box;  /* 패딩을 높이에 포함 */
+  overflow: hidden;  /* 스크롤 방지 */
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.input-section {
+  flex: 1;
+  min-width: 250px;
+  padding: 20px;
+  background-color: #2d2d2d;
+  border-right: 2px solid #444;
+  height: 100vh;
+  position: sticky;
+  top: 0;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.schedule-section {
+  flex: 4;
+  padding: 20px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.day-buttons {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.day-button {
+  flex: 1;
+  padding: 8px;
+  background-color: #3d3d3d;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.day-button:hover {
+  background-color: #4a4a4a;
+}
+
+.day-button.active {
+  background-color: #4a4a8f;
+  border-color: #5858a6;
+}
+
+.time-picker-section {
+  display: flex;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.time-picker-group {
+  flex: 1;
   display: flex;
   flex-direction: column;
+  gap: 5px;
+}
+
+.time-picker-group label {
+  color: #888;
+  font-size: 0.9em;
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  margin: 10px 0;
+  background-color: #3d3d3d;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #fff;
+  box-sizing: border-box;
+}
+
+.submit-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #4a4a8f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.submit-button:hover {
+  background-color: #5858a6;
+}
+
+.schedule-grid {
+  display: flex;
+  gap: 10px;
+}
+
+.day-column {
+  flex: 1;
+  min-width: 120px;
+  padding: 10px;
+  background-color: #2d2d2d;
+  border: 1px solid #444;
+  border-radius: 4px;
+}
+
+.event {
+  margin: 5px 0;
+  padding: 8px;
+  background-color: #3d3d3d;
+  border-radius: 4px;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* TimePicker 스타일링 */
+.time-picker-section {
+  margin: 15px 0;
+}
+
+.time-picker-section label {
+  display: block;
+  color: #888;
+  margin-bottom: 8px;
+  font-size: 0.9em;
+}
+
+/* 입력 필드 스타일링 */
+.MuiInputBase-root {
+  width: 100% !important;
+  height: 33px !important;
+  color: white !important;
+  background-color: #3d3d3d !important;
+  border-radius: 4px !important;
+  padding: 8px !important;
+  box-sizing: border-box !important;
+  cursor: pointer !important;
+  position: relative !important;
+}
+
+.MuiOutlinedInput-notchedOutline {
+  border-color: #444 !important;
+}
+
+.MuiInputBase-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: #5858a6 !important;
+}
+
+.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #4a4a8f !important;
+}
+
+.MuiInputBase-input {
+  padding: 8px 12px !important;
+  font-size: 1rem !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  pointer-events: none !important;
+}
+
+/* 아이콘 색상 */
+.MuiSvgIcon-root {
+  color: #fff !important;
+}
+
+/* 팝업 스타일링 */
+.MuiPaper-root {
+  background-color: #2d2d2d !important;
+  color: white !important;
+}
+
+/* 시계 스타일링 */
+.MuiClock-pin {
+  background-color: #4a4a8f !important;
+}
+
+.MuiClockPointer-root {
+  background-color: #4a4a8f !important;
+}
+
+.MuiClockPointer-thumb {
+  background-color: #4a4a8f !important;
+  border-color: #4a4a8f !important;
+}
+
+/* 버튼 스타일링 */
+.MuiButtonBase-root {
+  color: white !important;
+}
+
+.MuiPickersDay-root {
+  color: white !important;
+}
+
+.MuiPickersDay-root.Mui-selected {
+  background-color: #4a4a8f !important;
+}
+
+/* 스크롤바 숨기기 */
+.MuiPickersPopper-root {
+  & ::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+  width: 100% !important;
+}
+
+.MuiPaper-root.MuiPickersPopper-paper {
+  display: flex;
+  justify-content: center;
+  width: 350px !important;  /* 또는 원하는 고정 너비 */
+  min-width: unset !important;
+  margin-left: 40px !important;
+  max-width: 100% !important;
+}
+
+/* 시계 다이얼 숫자들의 스크롤바 숨기기 */
+.MuiClockNumber-root::-webkit-scrollbar,
+.MuiPickersDay-root::-webkit-scrollbar {
+  display: none;
+}
+
+/* 시간 선택 패널의 스크롤바 숨기기 */
+.MuiDialogContent-root::-webkit-scrollbar {
+  display: none;
+}
+
+/* 모든 MUI 관련 스크롤바 숨기기 */
+.MuiPaper-root *::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* TimePicker 컨테이너 스타일 수정 */
+.time-picker-section {
+  margin: 15px 0;
+  width: 100%;
+}
+
+/* TimePicker 입력 필드 스타일 수정 */
+.MuiInputBase-root {
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* TimePicker 전체 스타일 */
+.MuiTextField-root {
+  width: 100% !important;
+}
+
+/* 클릭 가능한 영역 스타일 */
+.MuiInputBase-root {
+  cursor: pointer !important;
+  position: relative !important;
+}
+
+.MuiInputBase-input {
+  cursor: pointer !important;
+  pointer-events: none !important;  /* 입력 필드 자체의 이벤트 방지 */
+}
+
+/* 시계 아이콘 버튼 스타일 */
+.MuiInputAdornment-root button {
+  pointer-events: none !important;  /* 버튼 자체의 이벤트 방지 */
+}
+
+/* 전체 영역이 클릭 가능하도록 */
+.MuiFormControl-root {
+  width: 100% !important;
+}
+
+/* 시계 다이얼 크기 조정 */
+.MuiClock-clock {
+  width: 240px !important;
+  height: 240px !important;
+}
+
+/* 시계 컨테이너 패딩 조정 */
+.MuiPickersLayout-contentWrapper {
+  padding: 16px !important;
+}
+
+/* 일정 항목 스타일 수정 */
+.event {
+  margin: 5px 0;
+  padding: 8px;
+  background-color: #3d3d3d;
+  border-radius: 4px;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 삭제 버튼 스타일 */
+.delete-btn {
+  opacity: 0;
+  background: none;
+  border: none;
+  color: #bdbdbd;
+  font-size: 1.2em;
+  cursor: pointer;
+  padding: 0 5px;
+  transition: opacity 0.2s ease;
+}
+
+.delete-btn:hover {
+  color: #fff;
+}
+
+/* 대화상자 스타일 */
+.MuiDialog-paper {
+  background-color: #2d2d2d !important;
+  color: #fff !important;
+}
+
+.MuiDialogContentText-root {
+  color: #fff !important;
+}
+
+.MuiDialogActions-root button {
+  color: #fff !important;
+}
+
+.MuiDialogActions-root button:last-child {
+  background-color: #4a4a8f;
+}
+
+.MuiDialogActions-root button:last-child:hover {
+  background-color: #5858a6 !important;
+}
+
+/* 알림 스타일 */
+.MuiAlert-root {
+  background-color: #4a4a8f !important;
+  color: #fff !important;
+}
+
+.MuiAlert-icon {
+  color: #fff !important;
+}
+
+.MuiAlert-action {
+  color: #fff !important;
+}
+
+/* 시간표 컨테이너 */
+.timetable {
+  display: flex;
+  overflow-x: auto;
+  background-color: #2d2d2d;
+  border-radius: 8px;
+  padding: 10px;
+  margin-top: 20px;
+}
+
+/* 시간 열 */
+.time-column {
+  min-width: 80px;
+  border-right: 1px solid #444;
+}
+
+/* 요일 열 */
+.day-column {
+  min-width: 200px;
+  border-right: 1px solid #444;
+}
+
+.day-column:last-child {
+  border-right: none;
+}
+
+/* 헤더 셀 */
+.header-cell {
+  height: 40px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  font-weight: bold;
+  border-bottom: 2px solid #444;
+  background-color: #3d3d3d;
+}
+
+/* 시간 셀 */
+.time-cell {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+  font-size: 0.9em;
+  border-bottom: 1px solid #444;
+}
+
+/* 일정 셀 */
+.schedule-cell {
+  height: 60px;
+  border-bottom: 1px solid #444;
+  padding: 5px;
+  position: relative;
+}
+
+/* 일정 아이템 */
+.event-item {
+  background-color: #4a4a8f;
   color: white;
+  padding: 8px;
+  border-radius: 4px;
+  height: calc(100% - 16px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.9em;
 }
 
-.App-link {
-  color: #61dafb;
+/* 삭제 버튼 */
+.delete-btn {
+  opacity: 0;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.2em;
+  cursor: pointer;
+  padding: 0 5px;
+  transition: opacity 0.2s ease;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.delete-btn:hover {
+  color: #ff4444;
+}
+
+/* 스크롤바 스타일링 */
+.timetable::-webkit-scrollbar {
+  height: 8px;
+}
+
+.timetable::-webkit-scrollbar-track {
+  background: #2d2d2d;
+  border-radius: 4px;
+}
+
+.timetable::-webkit-scrollbar-thumb {
+  background: #4a4a8f;
+  border-radius: 4px;
+}
+
+.timetable::-webkit-scrollbar-thumb:hover {
+  background: #5858a6;
+}
+
+/* FullCalendar 커스텀 스타일 */
+.calendar-container {
+  background-color: #2d2d2d;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 20px;
+  max-height: calc(100vh - 200px);
+}
+
+/* 시간표 전체 스타일 */
+.fc {
+  background-color: #2d2d2d;
+  color: #fff;
+}
+
+/* 헤더 스타일 */
+.fc-col-header-cell {
+  background-color: #3d3d3d;
+  padding: 10px !important;
+}
+
+/* 시간 레이블 */
+.fc-timegrid-slot-label {
+  color: #888;
+  font-size: 0.85em;
+}
+
+/* 그리드 라인 */
+.fc-timegrid-slot {
+  border-color: #444 !important;
+}
+
+.fc-timegrid-col {
+  border-color: #444 !important;
+}
+
+/* 이벤트 스타일 */
+.fc-event {
+  border: none !important;
+  padding: 2px 6px !important;
+}
+
+.fc-event-title {
+  font-size: 0.9em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fc-event:hover {
+  opacity: 0.80 !important;
+}
+
+/* 현재 시간 표시선 */
+.fc-timegrid-now-indicator-line {
+  border-color: #ff4444 !important;
+}
+
+/* 스크롤바 스타일링 */
+.fc-scroller::-webkit-scrollbar {
+  width: 8px;
+}
+
+.fc-scroller::-webkit-scrollbar-track {
+  background: #2d2d2d;
+}
+
+.fc-scroller::-webkit-scrollbar-thumb {
+  background: #4a4a8f;
+  border-radius: 4px;
+}
+
+.fc-scroller::-webkit-scrollbar-thumb:hover {
+  background: #5858a6;
+}
+
+/* TimePicker 스타일 수정 */
+.MuiInputBase-root {
+  width: 100% !important;
+  background-color: #3d3d3d !important;
+  border: 1px solid #444 !important;
+  border-radius: 4px !important;
+  color: #fff !important;
+}
+.fc-timegrid-axis{
+  background-color: #3d3d3d !important;
+}
+
+.MuiInputBase-input {
+  padding: 8px 12px !important;
+  font-size: 0.9em !important;
+}
+
+/* 시간 슬롯 높이 조정 */
+.fc .fc-timegrid-slot {
+  height: 2px !important;     /* 매우 작은 높이로 설정 */
+  border-bottom: none !important;
+}
+
+
+/* 정시 구분선 스타일 */
+.fc .fc-timegrid-slot[data-time$=":00"] {
+  border-bottom: 1px solid #444 !important;
+  height: 4px !important;     /* 시간 구분선은 조금 더 두껍게 */
+}
+
+/* 시간 레이블 정렬 */
+.fc-timegrid-slot-label-cushion {
+  font-size: 1em !important;
+  padding: 0 8px !important;
+}
+
+/* 이벤트 스타일 수정 */
+.fc-event {
+  font-size: 0.85em !important;
+  border-radius: 2px !important;
+  margin: 1px 0 !important;
+}
+
+/* 전체 캘린더 컨테이너 */
+.calendar-container {
+  height: calc(100vh - 100px) !important;
+  overflow-y: auto !important;
+}
+
+/* 시간 열 너비 정 */
+.fc .fc-timegrid-axis-cushion {
+  width: 45px !important;
+  max-width: 45px !important;
+}
+
+/* 그리드 컬럼 스타일 */
+.fc-timegrid-col {
+  padding: 0 !important;
+}
+
+/* 이벤트 내용 패딩 조정 */
+.fc-event-main {
+  padding: 2px 4px !important;
+}
+.fc-event-main-frame {
+  display: flex;
+  flex-direction: row;
+}
+
+/* 시간 구분선 스타일링 */
+.fc-timegrid-slots td {
+  min-height: 2px !important;
+}
+
+/* 모든 슬롯 관련 요소의 높이 강제 조정 */
+.fc .fc-timegrid-slot,
+.fc .fc-timegrid-slot-lane,
+.fc-timegrid-slot,
+.fc-timegrid-slot-lane,
+td.fc-timegrid-slot,
+.fc-timegrid-slots td,
+.fc .fc-timegrid-slot[data-time],
+.fc-timeline-slot,
+.fc-timeline-slot-lane {
+  height: 4px !important;
+  min-height: 4px !important;
+  max-height: 4px !important;
+  line-height: 4px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+}
+
+/* 시간 구분선 (1시간 단위) */
+.fc .fc-timegrid-slot[data-time$=":00"] {
+  border-bottom: 1px solid #444 !important;
+}
+
+/* 테이블 셀 기본 속성 재정의 */
+.fc-timegrid-slots td {
+  height: 5px !important;
+  min-height: 5px !important;
+  max-height: 5px !important;
+}
+
+/* 시간 레이블 컨테이너 조정 */
+.fc-timegrid-slot-label,
+.fc-timegrid-axis-cushion,
+.fc-scrollgrid-shrink-cushion,
+.fc-timegrid-slot-label-cushion {
+  height: 5px !important;
+  min-height: 5px !important;
+  max-height: 5px !important;
+  line-height: 5px !important;
+  font-size: 20px !important;
+}
+
+/* 이벤트 컨테이너 조정 */
+.fc-timegrid-event-harness {
+  height: auto !important;
+}
+
+/* 스크롤 영역 최소 높이 제거 */
+.fc-scroller-harness,
+.fc-scroller,
+.fc-timegrid-body,
+.fc-timegrid-body-harness {
+  min-height: 0 !important;
+}
+
+/* !important 우선순위를 높이기 위한 추가 선택자 */
+.fc.fc-media-screen.fc-direction-ltr.fc-theme-standard .fc-timegrid-slot {
+  height: 5px !important;
+  min-height: 5px !important;
+  max-height: 5px !important;
+}
+
+/* 모든 슬롯의 테두리와 구분선 완전히 제거 */
+.fc .fc-timegrid-slot,
+.fc-timegrid-slot,
+.fc-timegrid-slot-lane,
+td.fc-timegrid-slot,
+.fc-timegrid-slots td,
+.fc .fc-timegrid-slot[data-time],
+.fc-timegrid-slot.fc-timegrid-slot-lane,
+.fc-timeline-slot,
+.fc-timeline-slot-lane {
+  height: 4px !important;
+  min-height: 4px !important;
+  max-height: 4px !important;
+  border: none !important;
+  border-bottom: none !important;
+  border-top: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: none !important;
+}
+
+/* 1시간 단위 구분선만 표시 */
+.fc .fc-timegrid-slot[data-time$=":00"] {
+  border-bottom: 1px solid #444 !important;
+}
+
+/* 세로 구분선 강제 적용 */
+.fc-timegrid-col,
+.fc .fc-timegrid-col,
+.fc-timegrid-col-frame {
+  border-left: 1px solid #444 !important;
+}
+
+/* 첫 번째 열의 왼쪽 테두리 제거 */
+.fc-timegrid-cols .fc-timegrid-col:first-child {
+  border-left: none !important;
+}
+
+/* 기타 모든 테두리 제거 */
+.fc-theme-standard td, 
+.fc-theme-standard th,
+.fc-scrollgrid,
+.fc-scrollgrid td,
+.fc-scrollgrid th {
+  border: none !important;
+}
+
+/* 요일 헤더 구분선 */
+.fc-col-header-cell {
+  border-right: 1px solid #444 !important;
+}
+
+/* 현재 시간 표시 스타일 */
+.current-time {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #fff;
+  padding: 15px;
+  background-color: #2d2d2d;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  text-align: center;
+  letter-spacing: 1px;
+}
+.current-event{
+  margin-left: 10px;
+}
+
+/* 알림 스타일 */
+.schedule-alert {
+  padding: 8px 0;
+}
+
+.alert-title {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.alert-event {
+  padding: 4px 0;
+}
+
+/* Material-UI Alert 커스텀 스타일 */
+.MuiAlert-root {
+  background-color: #4a4a8f !important;
+}
+
+.MuiAlert-icon {
+  color: #fff !important;
+}
+
+/* 알림음 설정 스타일 */
+.sound-setting {
+  margin-top: 20px;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: #2d2d2d;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sound-attribution {
+  font-size: 0.7em;
+  color: #888;
+}
+
+.sound-attribution a {
+  color: #888;
+  text-decoration: none;
+}
+
+.sound-attribution a:hover {
+  text-decoration: underline;
+  color: #aaa;
+}
+
+.color-picker {
+  margin: 15px 0;
+}
+
+.color-picker label {
+  display: block;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.color-options {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.color-option {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s;
+  border: 2px solid transparent;
+}
+
+.color-option:hover {
+  transform: scale(1.1);
+}
+
+.color-option.selected {
+  border-color: #fff;
+  transform: scale(1.1);
+}
+
+/* FullCalendar 이벤트 스타일 */
+.fc-event {
+  border: none !important;
+  padding: 2px 4px !important;
 }
