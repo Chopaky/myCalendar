@@ -31,17 +31,10 @@ function App() {
     } catch (error) {
       console.error('Error saving schedule:', error);
     }
-  }, [schedule]);
-
-  // 현재 요일을 얻는 함수
-  const getCurrentDayName = () => {
-    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-    return days[new Date().getDay()];
-  };
-
+  }, [schedule])
+  
   // 새로운 일정 입력을 위한 상태 수정
   const [newEvent, setNewEvent] = useState({
-    day: getCurrentDayName(), // 현재 요일로 초기화
     title: '',
     startTime: dayjs().set('hour', 0).set('minute', 0),
     endTime: dayjs().set('hour', 0).set('minute', 30),
@@ -175,16 +168,16 @@ function App() {
     };
   }, [stopRepeatingSound]);
 
-  // 요일 변환 함수
+  // 요일 변환 함수 수정
   const getDayName = (day) => {
     const days = {
-      monday: '월요일',
-      tuesday: '화요일',
-      wednesday: '수요일',
-      thursday: '목요일',
-      friday: '금요일',
-      saturday: '토요일',
-      sunday: '일요일'
+      monday: '월',
+      tuesday: '화',
+      wednesday: '수',
+      thursday: '목',
+      friday: '금',
+      saturday: '토',
+      sunday: '일'
     };
     return days[day];
   };
@@ -278,7 +271,7 @@ function App() {
     color: '#4a4a8f'
   });
 
-  // handleEventClick 함수 수정
+  // handleEventClick 수 수정
   const handleEventClick = (info) => {
     const eventTitle = info.event.title;
     const day = info.event.extendedProps.day;
@@ -335,7 +328,21 @@ function App() {
     }
   };
 
-  // 제출 들러
+  // 선택된 요일들을 관리하기 위한 새로운 상태
+  const [selectedDays, setSelectedDays] = useState([]);
+
+  // handleDayClick 함수 수정
+  const handleDayClick = (day) => {
+    setSelectedDays(prev => {
+      if (prev.includes(day)) {
+        return prev.filter(d => d !== day);
+      } else {
+        return [...prev, day];
+      }
+    });
+  };
+
+  // handleSubmit 함수 수정
   const handleSubmit = (e) => {
     e.preventDefault();
     
@@ -347,28 +354,37 @@ function App() {
       return;
     }
 
-    const newSchedule = {
-      ...schedule,
-      [newEvent.day]: [
-        ...schedule[newEvent.day],
+    if (selectedDays.length === 0) {
+      setAlert({
+        open: true,
+        message: '요일을 선택해주세요.'
+      });
+      return;
+    }
+
+    const newSchedule = { ...schedule };
+    selectedDays.forEach(day => {
+      newSchedule[day] = [
+        ...newSchedule[day],
         {
           title: newEvent.title,
           start: newEvent.startTime.format('HH:mm'),
           end: newEvent.endTime.format('HH:mm'),
-          color: newEvent.color  // 색상 정보 저장
+          color: newEvent.color
         }
-      ].sort((a, b) => a.start.localeCompare(b.start))
-    };
+      ].sort((a, b) => a.start.localeCompare(b.start));
+    });
 
     setSchedule(newSchedule);
-    
+
+    // 입력 폼 초기화
     setNewEvent({
-      day: getCurrentDayName(),
       title: '',
       startTime: dayjs().set('hour', 0).set('minute', 0),
       endTime: dayjs().set('hour', 0).set('minute', 30),
       color: '#4a4a8f'
     });
+    setSelectedDays([]); // 선택된 요일 초기화
   };
 
   // 수정 다이얼로그의 삭제 버튼 클릭 핸들러 추가
@@ -438,20 +454,55 @@ function App() {
     }
   };
 
+  // 체크리스트 상태 추가 (컴포넌트 최상단)
+  const [checklist, setChecklist] = useState(() => {
+    const savedChecklist = localStorage.getItem('checklist');
+    return savedChecklist ? JSON.parse(savedChecklist) : [];
+  });
+
+  // 체크리스트 저장 함수
+  useEffect(() => {
+    localStorage.setItem('checklist', JSON.stringify(checklist));
+  }, [checklist]);
+
+  // 체크리스트 아이템 추가 함수
+  const addChecklistItem = () => {
+    setChecklist([...checklist, { text: '', checked: false }]);
+  };
+
+  // 체크리스트 아이템 수정 함수
+  const updateChecklistItem = (index, text) => {
+    const newChecklist = [...checklist];
+    newChecklist[index].text = text;
+    setChecklist(newChecklist);
+  };
+
+  // 체크리스트 아이템 체크 상태 변경 함수
+  const toggleChecklistItem = (index) => {
+    const newChecklist = [...checklist];
+    newChecklist[index].checked = !newChecklist[index].checked;
+    setChecklist(newChecklist);
+  };
+
+  // 체크리스트 아이템 삭제 함수
+  const deleteChecklistItem = (index) => {
+    setChecklist(checklist.filter((_, i) => i !== index));
+  };
+
   return (
     <div className="App">
       <div className="input-section">
         <h2>새로운 일정 등록</h2>
         <form onSubmit={handleSubmit}>
           <div className="day-buttons">
-            {['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].map(day => (
+            {Object.keys(schedule).map((day) => (
               <button
                 key={day}
                 type="button"
-                className={`day-button ${newEvent.day === day ? 'active' : ''}`}
-                onClick={() => setNewEvent({...newEvent, day: day})}
+                className={`day-button ${selectedDays.includes(day) ? 'active' : ''}`}
+                onClick={() => handleDayClick(day)}
               >
-                {getDayName(day).slice(0, 1)}
+                {getDayName(day)}
               </button>
             ))}
           </div>
@@ -522,28 +573,104 @@ function App() {
           <button type="submit" className="submit-button">일정 추가</button>
         </form>
 
+      {/* 체크리스트 아이템 추가 함수 */}
+      <div className="checklist-container" style={{ 
+          marginTop: '20px',
+          backgroundColor: '#2d2d2d',
+          padding: '15px',
+          borderRadius: '8px',
+          minHeight: '280px',
+          maxHeight: '300px'
+        }}>
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '15px'
+          }}>
+            <h3 style={{ margin: 0, fontSize: '1.1rem' }}>체크리스트</h3>
+            <Button
+              onClick={addChecklistItem}
+              style={{
+                minWidth: '35px',
+                width: '35px',
+                height: '35px',
+                padding: 0,
+                backgroundColor: '#4a4a8f',
+                color: '#fff',
+                fontSize: '1.2rem'
+              }}
+            >
+              +
+            </Button>
+          </div>
+          <div className="checklist-items" style={{ 
+            maxHeight: '300px',
+            overflowY: 'auto',
+            padding: '5px'
+          }}>
+            {checklist.map((item, index) => (
+              <div key={index} style={{ 
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                marginBottom: '10px'
+              }}>
+                <input
+                  type="checkbox"
+                  checked={item.checked}
+                  onChange={() => toggleChecklistItem(index)}
+                  style={{ 
+                    cursor: 'pointer',
+                    width: '18px',
+                    height: '18px'
+                  }}
+                />
+                <input
+                  type="text"
+                  value={item.text}
+                  onChange={(e) => updateChecklistItem(index, e.target.value)}
+                  placeholder="할 일을 입력하세요"
+                  style={{
+                    flex: 1,
+                    backgroundColor: '#3d3d3d',
+                    border: '1px solid #444',
+                    borderRadius: '4px',
+                    color: '#fff',
+                    padding: '8px 12px',
+                    fontSize: '0.95em',
+                    height: '35px',
+                    boxSizing: 'border-box'
+                  }}
+                />
+                <Button
+                  onClick={() => deleteChecklistItem(index)}
+                  style={{
+                    minWidth: '35px',
+                    width: '35px',
+                    height: '35px',
+                    padding: 0,
+                    backgroundColor: '#e74c3c',
+                    color: '#fff',
+                    fontSize: '1.2rem'
+                  }}
+                >
+                  ×
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* 알림음 설정을 폼 아래로 이동 */}
         
-        <div className="clear-all-button" style={{ marginTop: '15px' }}>
-          <Button
-            onClick={handleClearAllSchedules}
-            style={{
-              width: '100%',
-              backgroundColor: '#e74c3c',
-              color: '#fff',
-              padding: '10px',
-              borderRadius: '4px',
-              marginTop: '350px'
-            }}
-          >
-            모든 일정 제거
-          </Button>
-        </div>
+
         <div className="sound-setting">
           <div style={{ 
             display: 'flex', 
             justifyContent: 'space-between',
-            marginBottom: '10px'
+            marginBottom: '5px',
+            marginTop: '15px'
           }}>
             <FormControlLabel
               control={
@@ -614,6 +741,22 @@ function App() {
             일정 불러오기
           </Button>
         </div>
+        <div className="clear-all-button" style={{ marginTop: '15px' }}>
+          <Button
+            onClick={handleClearAllSchedules}
+            style={{
+              width: '100%',
+              backgroundColor: '#e74c3c',
+              color: '#fff',
+              padding: '10px',
+              borderRadius: '4px'
+            }}
+          >
+            모든 일정 제거
+          </Button>
+        </div>
+
+
 
       </div>
 
